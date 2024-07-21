@@ -4,7 +4,7 @@
     "resolveJsonModule": true,
     "emitDecoratorMetadata": true,
     "experimentalDecorators": true,
-    "target": "ES5",
+    "target": "ESNext",
     "module": "ESNext",
     "moduleResolution": "Node",
     "allowSyntheticDefaultImports": true,
@@ -12,7 +12,11 @@
     "typeRoots": [
       "node_modules/@types/"
     ],
+    "lib": [
+      "ESNext"
+    ],
     "strict": true,
+    "sourceMap": true,
     "baseUrl": ".",
     "paths": {
       "src/*": [

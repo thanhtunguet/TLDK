@@ -43,16 +43,17 @@ export class TaiLieuDieuKy {
 
     // Function to extract the file ID from a Google Drive sharing URL
     extractFileId(url: string): string {
-        const match = url.match(/\/d\/(.*?)(\/|$)/);
+        const match = url.match(/\/(d|folders)\/([A-Za-z0-9_-]+)(\/(.*))?/);
         if (match) {
-            return match[1];
+            return match[2];
         } else {
             throw new Error('Invalid Google Drive URL');
         }
     }
 
     // Function to generate a direct download URL from a Google Drive file ID
-    getDirectDownloadUrl(fileId: string): string {
+    getDirectDownloadUrl(link: string): string {
+        const fileId = this.extractFileId(link);
         return `https://drive.google.com/uc?export=download&id=${fileId}`;
     }
 
@@ -64,11 +65,9 @@ export class TaiLieuDieuKy {
     }
 
     // Function to download a file from Google Drive
-    async downloadFileFromGoogleDrive(url: string, outputDir: string) {
+    async downloadFileFromGoogleDrive(downloadUrl: string, outputDir: string) {
         try {
-            const fileId = this.extractFileId(url);
-            const downloadUrl = this.getDirectDownloadUrl(fileId);
-
+            const fileId = this.extractFileId(downloadUrl);
             const response = await axios.get(downloadUrl, {
                 responseType: 'stream',
                 maxRedirects: 0, // Avoid automatic redirection handling for download links
@@ -85,33 +84,17 @@ export class TaiLieuDieuKy {
             const outputPath = path.join(__dirname, outputDir, filename);
             response.data.pipe(createWriteStream(outputPath));
 
-            console.log(`Started downloading ${url}`);
+            console.log(`Started downloading ${downloadUrl}`);
             await new Promise((resolve, reject) => {
                 response.data.on('end', resolve);
                 response.data.on('error', reject);
             });
 
-            console.log(`Finished downloading ${url}`);
+            console.log(`Finished downloading ${downloadUrl}`);
         } catch (error) {
-            console.error(`Error downloading file from ${url}`);
+            console.error(`Error downloading file from ${downloadUrl}`);
         }
     }
-
-    async downloadAll() {
-        const ebooks = require('../ebooks.json');
-        for (const url of ebooks) {
-            try {
-                console.log(`Downloading ${url} at ${new Date()}`);
-                await this.downloadFileFromGoogleDrive(url, './downloads');
-                console.log(`----------------\n`);
-            } catch (error) {
-                console.error(`Error downloading ${url}:`, error);
-            }
-
-            await sleep(500);
-        }
-    }
-
 }
 
 export const tldk = new TaiLieuDieuKy();
