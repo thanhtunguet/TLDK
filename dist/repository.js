@@ -1,4 +1,3 @@
-"use strict";
 var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
     function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
     return new (P || (P = Promise))(function (resolve, reject) {
@@ -35,11 +34,9 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
         if (op[0] & 5) throw op[1]; return { value: op[0] ? op[1] : void 0, done: true };
     }
 };
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.repository = exports.TaiLieuDieuKyRepository = void 0;
-var cheerio_1 = require("cheerio");
-var traversing_1 = require("cheerio/lib/api/traversing");
-var pages_1 = require("./pages");
+import { load } from "cheerio";
+import { last } from "cheerio/lib/api/traversing";
+import { getLastPage } from "./pages";
 var axios = require('axios');
 var TaiLieuDieuKyRepository = /** @class */ (function () {
     function TaiLieuDieuKyRepository() {
@@ -52,14 +49,14 @@ var TaiLieuDieuKyRepository = /** @class */ (function () {
                     case 0: return [4 /*yield*/, axios.get('https://tailieudieuky.com/baiviet/tai-lieu-va-ebook/')];
                     case 1:
                         response = _a.sent();
-                        $ = (0, cheerio_1.load)(response.data);
+                        $ = load(response.data);
                         $('.pagelayer-btn-holder.pagelayer-ele-link.pagelayer-btn-custom.pagelayer-btn-mini.pagelayer-btn-icon-left')
                             .each(function () {
                             var href = $(this).attr('href');
                             if (typeof href === 'string') {
-                                (0, pages_1.getLastPage)(href)
+                                getLastPage(href)
                                     .then(function (lastPage) {
-                                    console.log("".concat(href, " = ").concat(traversing_1.last));
+                                    console.log("".concat(href, " = ").concat(last));
                                 })
                                     .catch(function (error) {
                                 });
@@ -72,5 +69,5 @@ var TaiLieuDieuKyRepository = /** @class */ (function () {
     };
     return TaiLieuDieuKyRepository;
 }());
-exports.TaiLieuDieuKyRepository = TaiLieuDieuKyRepository;
-exports.repository = new TaiLieuDieuKyRepository();
+export { TaiLieuDieuKyRepository };
+export var repository = new TaiLieuDieuKyRepository();
